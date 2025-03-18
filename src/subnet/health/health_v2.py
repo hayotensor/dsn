@@ -7,6 +7,7 @@ from functools import partial
 from typing import List
 
 import numpy as np
+from hypermind.utils.logging import get_logger
 from hypermind import DHT, PeerID
 from hypermind.p2p.multiaddr import Multiaddr
 from subnet.data_structures import UID_DELIMITER, ServerState
@@ -16,7 +17,8 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 from .config import *
 from .p2p_utils import check_reachability_parallel, get_peers_ips, extract_peer_ip_info
 
-logger = logging.getLogger(__name__)
+# logger = get_logger(__name__)
+logger = get_logger("hypermind")
 
 @retry(wait=wait_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(10))
 def fetch_health_state2(dht: DHT) -> dict:

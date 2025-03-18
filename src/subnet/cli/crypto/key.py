@@ -13,7 +13,7 @@ import multihash
 
 logger = get_logger(__name__)
 
-# python -m subnet.cli.crypto.key 
+# python -m subnet.cli.crypto.key --path private_key.key
 # python -m subnet.cli.crypto.key --path private_key2.key
 
 def main():
