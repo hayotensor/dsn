@@ -30,7 +30,8 @@ class AttestReason(Enum):
   ATTESTED = 2
   ATTEST_FAILED = 3
   SHOULD_NOT_ATTEST = 4
-  SHUTDOWN = 5
+  NOT_VALIDATOR = 5
+  SHUTDOWN = 6
 
 class Consensus(threading.Thread):
   """
@@ -255,9 +256,15 @@ class Consensus(threading.Thread):
 
               time.sleep(saturating_sub(delta * BLOCK_SECS, BLOCK_SECS))
               continue
+            elif reason == AttestReason.NOT_VALIDATOR:
+              # Retrieved consensus data for symmetry, but not validator so skipping attestation
+              self.last_validated_or_attested_epoch = epoch
+              break
             elif reason == AttestReason.SHUTDOWN:
               # break and reset loop
+              self.last_validated_or_attested_epoch = epoch
               break
+
             # If False, still waiting for validator to submit data
             continue
           else:
@@ -335,9 +342,11 @@ class Consensus(threading.Thread):
         return True, AttestReason.ATTESTED
       else:
         return False, AttestReason.ATTEST_FAILED
-    else:
-      logger.info("Validators data is not valid, skipping attestation.")
+    elif should_attest is False and attest:
       return False, AttestReason.SHOULD_NOT_ATTEST
+    else:
+      logger.info("Retrieved data for symmetry but not Validator class yet, skipping attestation.")
+      return False, AttestReason.NOT_VALIDATOR
   
   def is_submittable(self) -> bool:
     submittable_nodes = get_submittable_nodes(
@@ -594,6 +603,9 @@ class Consensus(threading.Thread):
 
     # Convert my_data to a set
     set2 = set(frozenset(d.items()) for d in my_data)
+
+    logger.info(f"Validator data: {set1}")
+    logger.info(f"Our data:       {set2}")
 
     success = set1 == set2
 

@@ -16,17 +16,13 @@ PHRASE = os.getenv('PHRASE')
 
 logger = get_logger(__name__)
 
-"""
-python -m subnet.cli.hypertensor.subnet_node.activate --subnet_id 1
-"""
-
 def main():
     # fmt:off
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--subnet_id", type=str, required=True, help="Subnet ID you registered your subnet node for. ")
     parser.add_argument("--amount", type=float, required=True, help="Amount of stake to be added")
     parser.add_argument("--local", action="store_true", help="Run in local mode, uses LOCAL_RPC")
-    parser.add_argument("--phrase", type=str, help="Coldkey seed phrase")
+    parser.add_argument("--phrase", type=str, required=False, help="Coldkey phrase that controls actions that include funds")
 
     remove_last_command()
     

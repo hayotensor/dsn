@@ -20,7 +20,6 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 from subnet.client.remote_sequential import RemoteSequential
 from subnet.constants import TEMP_INITIAL_PEERS_LOCATION
 from subnet.server.throughput import synchronize
-# from subnet.substrate.chain_data import SubnetNode
 from subnet.substrate.utils import get_included_nodes
 from subnet.utils.auto_config import AutoDistributedConfig
 
@@ -31,8 +30,7 @@ from subnet.substrate.config import SubstrateConfigCustom
 from subnet.substrate.chain_functions import get_epoch_length
 from subnet.utils.math_utils import remove_outliers_adaptive, remove_outliers_iqr
 
-# logger = hypermind.get_logger(__name__)
-logger = hypermind.get_logger("hypermind")
+logger = hypermind.get_logger(__name__)
 
 BLOCK_WEIGHT = 0.5
 RPS_WEIGHT = 1 - BLOCK_WEIGHT
