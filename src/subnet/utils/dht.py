@@ -73,7 +73,6 @@ async def _declare_active_modules(
 ) -> Dict[ModuleUID, bool]:
     num_workers = len(uids) if dht.num_workers is None else min(len(uids), dht.num_workers)
     subkeys = [dht.peer_id.to_base58()] * len(uids) if record_validator is None else [dht.peer_id.to_base58().encode() + record_validator.local_public_key] * len(uids)
-    # print("subkeys", subkeys)
     return await node.store_many(
         keys=uids,
         subkeys=subkeys,
@@ -166,3 +165,26 @@ def compute_spans(module_infos: List[RemoteModuleInfo], *, min_state: ServerStat
             elif spans[peer_id].state == server_info.state:
                 spans[peer_id].end = max(spans[peer_id].end, block_idx + 1)
     return spans
+
+def get_routing_table(
+    dht: DHT,
+    *,
+    return_future: bool = False,
+):
+    return dht.run_coroutine(
+        partial(
+            _get_routing_table,
+        ),
+        return_future=return_future,
+    )
+
+async def _get_routing_table(
+    dht: DHT,
+    node: DHTNode,
+):
+    peer_id_to_uid = node.protocol.routing_table.peer_id_to_uid
+    uid_to_peer_id = node.protocol.routing_table.uid_to_peer_id
+    print(peer_id_to_uid)
+    print(uid_to_peer_id)
+
+

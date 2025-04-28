@@ -46,7 +46,7 @@ from subnet.server.reachability import ReachabilityProtocol, check_direct_reacha
 from subnet.server.throughput import get_dtype_name, get_server_throughput
 from subnet.utils.auto_config import AutoDistributedConfig
 from subnet.utils.convert_block import QuantType, check_device_balance, convert_block
-from subnet.utils.dht import declare_active_modules, get_remote_module_infos
+from subnet.utils.dht import declare_active_modules, get_remote_module_infos, get_routing_table
 from subnet.utils.misc import get_size_in_bytes
 from subnet.utils.ping import PingAggregator
 from subnet.utils.random import sample_up_to
@@ -690,7 +690,7 @@ class ModuleContainer(threading.Thread):
         Please note that terminating container otherwise (e.g. by killing processes) may result in zombie processes.
         If you did already cause a zombie outbreak, your only option is to kill them with -9 (SIGKILL).
         """
-        # self.dht_announcer.announce(ServerState.OFFLINE)
+        self.dht_announcer.announce(ServerState.OFFLINE)
         logger.info(f"Announced that blocks {list(self.module_backends.keys())} are offline")
 
         self.ready.clear()
@@ -797,6 +797,8 @@ class ModuleAnnouncerThread(threading.Thread):
             self.trigger.wait(max(delay, 0))
             self.trigger.clear()
 
+            self.print_routing_table()
+
     def announce(self, state: ServerState) -> None:
         self.server_info.state = state
         self.trigger.set()
@@ -812,6 +814,16 @@ class ModuleAnnouncerThread(threading.Thread):
         pinged_servers |= set(sample_up_to(module_infos[-1].servers, self.max_pinged))
         self.ping_aggregator.ping(list(pinged_servers))
 
+    def print_routing_table(self):
+        ...
+        # while True:
+        #     time.sleep(10)
+        #     print(" ")
+        #     print(" === ROUTING TABLE === ")
+        #     print(" === My Peer ID === ")
+        #     print(self.dht.peer_id)
+        #     print(" ")
+        #     get_routing_table(self.dht)
 
 class RuntimeWithDeduplicatedPools(Runtime):
     """A version of hypermind.moe.server.runtime.Runtime that allows multiple backends to reuse a task pool"""
